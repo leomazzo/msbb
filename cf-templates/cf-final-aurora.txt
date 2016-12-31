@@ -707,7 +707,7 @@
                   "sudo unzip master.zip\n",
                   "sudo chmod -R 777 /tmp/msbb-master\n",
                   "cd /tmp/msbb-master\n",
-				  "sudo /tmp/msbb-master/init-final.sh\n",
+				  "sudo /tmp/msbb-master/bbforum-config/init-final.sh\n",
                   "sudo sed -i \"s/'database_name_here'/'",{ "Ref" : "DatabaseName" }, "'/g\" /var/www/html/bbforum/inc/config.php\n",
                   "sudo sed -i \"s/'username_here'/'",{ "Ref" : "DatabaseUsername" }, "'/g\" /var/www/html/bbforum/inc/config.php\n",
                   "sudo sed -i \"s/'password_here'/'",{ "Ref" : "DatabasePassword" }, "'/g\" /var/www/html/bbforum/inc/config.php\n",
