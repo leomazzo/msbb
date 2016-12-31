@@ -10,7 +10,7 @@
             "Description": "AWS Key to access DynamoDB",
             "Type": "String"
         },
-        "SecretKey": {
+    "AWSSecretKey": {
             "Default": "",
             "Description": "AWS Secret Key to access DynamoDB",
             "Type": "String"
@@ -722,7 +722,7 @@
                   "sudo sed -i \"s/'database_name_here'/'",{ "Ref" : "DBName" }, "'/g\" /etc/my.cnf\n",
                   "sudo cat /tmp/msbb-master/dumpbb.sql | mysql -w ",{ "Ref" : "DBName" },"\n",
 	              "sudo sed -i \"s/your_key_here/'",{ "Ref" : "AWSKey" }, "'/g\" /var/www/html/bbforum/msbb/common.inc.php\n",
-                  "sudo sed -i \"s/your_secret_here/'",{ "Ref" : "SecretKey" }, "'/g\" /var/www/html/bbforum/msbb/common.inc.php\n"
+                  "sudo sed -i \"s/your_secret_here/'",{ "Ref" : "AWSSecretKey" }, "'/g\" /var/www/html/bbforum/msbb/common.inc.php\n"
                 ]]},
                 "mode" : "000777",
                 "owner" : "root",
