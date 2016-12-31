@@ -22,17 +22,9 @@
                         "AttributeName" : "id",
                         "AttributeType" : "S"
                      },
-                     "RangeKeyElement": {
-                        "AttributeName" : "date",
-                        "AttributeType" : "N"
-                     },
-                        "RangeKeyElement": {
-                        "AttributeName" : "time",
-                        "AttributeType" : "N"
-                     },
                         "RangeKeyElement": {
                         "AttributeName" : "msg",
-                        "AttributeType" : "N"
+                        "AttributeType" : "S"
                      }
                   },
                   "ProvisionedThroughput" : {
