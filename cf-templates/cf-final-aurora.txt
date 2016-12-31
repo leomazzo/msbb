@@ -843,7 +843,7 @@
         "DBSubnetGroupName": {
           "Ref": "DatabaseSubnetGroup"
         },
-        "VPCSecurityGroupsIds": {
+        "VpcSecurityGroupIds": {
           "Ref": "WebServerSecurityGroup"
         }
       }
