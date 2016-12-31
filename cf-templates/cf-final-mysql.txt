@@ -720,7 +720,7 @@
                   "sudo sed -i \"s/password_here/'",{ "Ref" : "DBPassword" }, "'/g\" /etc/my.cnf\n",
                   "sudo sed -i \"s/endpoint_here/'",{ "Fn::GetAtt" : [ "DBInstance", "Endpoint.Address" ] }, "'/g\" /etc/my.cnf\n",
                   "sudo sed -i \"s/'database_name_here'/'",{ "Ref" : "DBName" }, "'/g\" /etc/my.cnf\n",
-                  "sudo cat /tmp/msbb-master/dumpbb.sql | mysql -w ",{ "Ref" : "DBName" },"\n",
+                  "sudo cat /tmp/msbb-master/bbforum-config/dumpbb.sql | mysql -w ",{ "Ref" : "DBName" },"\n",
 	              "sudo sed -i \"s/your_key_here/'",{ "Ref" : "AWSKey" }, "'/g\" /var/www/html/bbforum/msbb/common.inc.php\n",
                   "sudo sed -i \"s/your_secret_here/'",{ "Ref" : "AWSSecretKey" }, "'/g\" /var/www/html/bbforum/msbb/common.inc.php\n"
                 ]]},

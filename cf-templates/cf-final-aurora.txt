@@ -2,7 +2,6 @@
   "AWSTemplateFormatVersion" : "2010-09-09",
 
   "Description" : "CloudFormation Template for Crossover Project Evaluation",
-
   "Parameters" : {
 
    "AWSKey": {
@@ -649,7 +648,6 @@
 
     "WebServerGroup" : {
       "Type" : "AWS::AutoScaling::AutoScalingGroup",
-      "DependsOn" : "DatabaseReplicaInstance",
       "Properties" : {
         "AvailabilityZones" : { "Fn::GetAZs" : "" },
         "LaunchConfigurationName" : { "Ref" : "LaunchConfig" },
@@ -657,24 +655,12 @@
         "MaxSize" : "5",
         "DesiredCapacity" : { "Ref" : "WebServerCapacity" },
         "LoadBalancerNames" : [ { "Ref" : "ElasticLoadBalancer" } ]
-      },
-      "CreationPolicy" : {
-        "ResourceSignal" : {
-          "Timeout" : "PT10M"
-        }
-      },
-      "UpdatePolicy": {
-        "AutoScalingRollingUpdate": {
-          "MinInstancesInService": "1",
-          "MaxBatchSize": "1",
-          "PauseTime" : "PT5M",
-          "WaitOnResourceSignals": "true"
-        }
       }
     },
 
     "LaunchConfig": {
       "Type" : "AWS::AutoScaling::LaunchConfiguration",
+      "DependsOn" : "DatabaseReplicaInstance",
       "Metadata" : {
         "AWS::CloudFormation::Init" : {
           "configSets" : {
@@ -754,7 +740,7 @@
                   "sudo sed -i \"s/endpoint_here/'",{ "Fn::GetAtt" : [ "DatabaseCluster", "Endpoint.Address" ] }, "'/g\" /etc/my.cnf\n",
                   "sudo sed -i \"s/your_key_here/'",{ "Ref" : "AWSKey" }, "'/g\" /var/www/html/bbforum/msbb/common.inc.php\n",
                   "sudo sed -i \"s/your_secret_here/'",{ "Ref" : "AWSSecretKey" }, "'/g\" /var/www/html/bbforum/msbb/common.inc.php\n",
-                  "sudo cat /tmp/msbb-master/dumpbb.sql | mysql -w ",{ "Ref" : "DatabaseName" },"\n"
+                  "sudo cat /tmp/msbb-master/bbforum-config/dumpbb.sql | mysql -w ",{ "Ref" : "DatabaseName" },"\n"
                 ]]},
                 "mode" : "000777",
                 "owner" : "root",
@@ -871,6 +857,9 @@
         },
         "DBSubnetGroupName": {
           "Ref": "DatabaseSubnetGroup"
+        },
+        "VPCSecurityGroupsIds": {
+          "Ref": "WebServerSecurityGroup"
         }
       }
     },
@@ -886,6 +875,9 @@
         },
         "DBSubnetGroupName": {
           "Ref": "DatabaseSubnetGroup"
+        },
+         "VPCSecurityGroupsIds": {
+          "Ref": "WebServerSecurityGroup"
         }
       }
     },
