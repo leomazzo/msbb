@@ -14,7 +14,7 @@ mv Upload bbforum
 cp -r bbforum /var/www/html/
 rm -rf Documentation mybb_1809.zip
 cd /var/www/html/bbforum
-sed -i 293d /etc/httpd/conf/httpd.conf
+sed -i 119d /etc/httpd/conf/httpd.conf
 echo 'DocumentRoot "/var/www/html/bbforum"' >> /etc/httpd/conf/httpd.conf
 
 service httpd restart
@@ -22,19 +22,14 @@ rm -rf /var/www/html/bbforum/install
 rm -rf /var/www/html/bbforum/inc/settings.php
 rm -rf /var/www/html/bbforum/inc/config.php
 cd /var/www/html/bbforum/
-cp /tmp/msbb-master/settings.php /var/www/html/bbforum/inc/settings.php
-cp /tmp/msbb-master/config-final.php /var/www/html/bbforum/inc/config.php
-tar -xf /tmp/msbb-master/themes.tar -C /var/www/html/bbforum/cache
+cp /tmp/msbb-master/bbforum-config/settings.php /var/www/html/bbforum/inc/settings.php
+cp /tmp/msbb-master/bbforum-config/config-final.php /var/www/html/bbforum/inc/config.php
+tar -xf /tmp/msbb-master/bbforum-config/themes.tar -C /var/www/html/bbforum/cache
 chmod -R 0777 cache uploads inc/settings.php inc/config.php
 
 
 echo "Deploying Management Systems......"
-mkdir -p /var/www/html/bbforum/msbb/
-cp /tmp/msbb-master/index.php /var/www/html/bbforum/msbb/
-cp /tmp/msbb-master/main.php /var/www/html/bbforum/msbb/
-cp /tmp/msbb-master/bootstrap* /var/www/html/bbforum/msbb/
-cd /var/www/html/bbforum/msbb/
-wget http://docs.aws.amazon.com/aws-sdk-php/v3/download/aws.zip
-unzip /var/www/html/bbforum/msbb/aws.zip
+cd /tmp
+cp -r /tmp/msbb-master/msbb /var/www/html/bbforum/
 echo "Configuration ended...."
 
