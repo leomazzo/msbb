@@ -2,39 +2,18 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "DynamoDB - MSBB",
     "Parameters": {
-        "AWS Key": {
+        "AWSKey": {
             "Default": "",
             "Description": "AWS Key to access DynamoDB",
             "Type": "String"
         },
-        "Secret Key": {
+        "SecretKey": {
             "Default": "",
             "Description": "AWS Secret Key to access DynamoDB",
             "Type": "String"
         }
     },
     "Resources": {
-        "AdminUser": {
-            "Properties": {
-                "Path": "/",
-                "Policies": [
-                    {
-                        "PolicyDocument": {
-                            "Statement": [
-                                {
-                                    "Action": "*",
-                                    "Effect": "Allow",
-                                    "Resource": "*"
-                                }
-                            ]
-                        },
-                        "PolicyName": "root"
-                    }
-                ]
-            },
-            "Type": "AWS::IAM::User"
-        },
-       
 	"LogsTable" : {
              "Type" : "AWS::DynamoDB::Table",
               "Properties" : {
@@ -46,11 +25,11 @@
                      "RangeKeyElement": {
                         "AttributeName" : "date",
                         "AttributeType" : "N"
-                     }
+                     },
                         "RangeKeyElement": {
                         "AttributeName" : "time",
                         "AttributeType" : "N"
-                     }
+                     },
                         "RangeKeyElement": {
                         "AttributeName" : "msg",
                         "AttributeType" : "N"
@@ -59,9 +38,9 @@
                   "ProvisionedThroughput" : {
                      "ReadCapacityUnits" : "5",
                      "WriteCapacityUnits" : "5"
-                 }                             
+                 },
+                 "TableName" : "LogsTable"                      
               }
         }
     }
 }
-
