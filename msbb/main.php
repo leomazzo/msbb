@@ -13,7 +13,7 @@ function get_log_files($dir, &$results = array()) {
 		if(!is_dir($path)) {
 			$files_list[] = $path;
 		}
-		elseif ($value != "." && $value != "..") {
+		elseif ($value != "." && $value != ".." && $value = "_") {
 			$dirs_list[] = $path;
 		}
 	}
@@ -28,6 +28,7 @@ function get_log_files($dir, &$results = array()) {
 	}
 
 	return $results;
+	print $results;
 }
 
 
@@ -55,7 +56,12 @@ foreach ($files as $key => $val) {
 $log =(!isset($_GET['p'])) ? $default : urldecode($_GET['p']);
 $lines =(!isset($_GET['lines'])) ? '50': $_GET['lines'];
 $file = $log;
+
+if (($file) == ''){
+$title = 'Statistics';
+} else {
 $title = substr($log, (strrpos($log, '/')));
+}
 
 function tail($filename, $lines = 50, $buffer = 4096)
 {
@@ -102,7 +108,6 @@ function tail($filename, $lines = 50, $buffer = 4096)
 	fclose($f);
 	return $output;
 }
-
 ?><!doctype html>
 <html lang="en">
 <head>
@@ -155,15 +160,14 @@ foreach ($files as $dir => $files_array) {
 <p>How many lines to display? <form action="" method="get">
 	<input type="hidden" name="p" value="<?php echo $log ?>">
 	<select name="lines" onchange="this.form.submit()">
-		<option value="10" <?php echo ($lines=='10') ? 'selected':'' ?>>10</option>
-		<option value="50" <?php echo ($lines=='50') ? 'selected':'' ?>>50</option>
-		<option value="100" <?php echo ($lines=='100') ? 'selected':'' ?>>100</option>
-		<option value="500" <?php echo ($lines=='500') ? 'selected':'' ?>>500</option>
-		<option value="1000" <?php echo ($lines=='1000') ? 'selected':'' ?>>1000</option>
+		<option value="10"   <?php echo ($lines=='10') ? 'selected':'' ?>>10</option>
+		<option value="50"   <?php echo ($lines=='50') ? 'selected':'' ?>>50</option>
+		<option value="100"  <?php echo ($lines=='100') ? 'selected':'' ?>>100</option>
+		<option value="500"  <?php echo ($lines=='500') ? 'selected':'' ?>>500</option>
 </select>
 </form></p>
 
-<form name="dyn" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+<form name="dyn" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>?p=<?php echo $log ?>&lines=<?php echo $lines ?>" method="post">
  <input name="buttondyn" type="submit" value="Insert Data into DynamoDB">
 </form>
         </div>
@@ -185,33 +189,54 @@ echo $output;
 
 // If press insert into DynamoDB
 if (isset($_POST['buttondyn'])) {
+	
+	include('config_dynamo.php');
+    
+    // Get variables
+    $filename=$_GET['p'];
+    $linesnumber=$_GET['lines'];
+    
+    // Open file
+	$ln = 0;
+	$start = 1;
+	$end = $linesnumber;  
 
-require_once ('config_dynamo.php');
+	$fd = fopen($filename, "rb"); // open the file
 
-	// Insert Data
-	// Set up batch requests
-	$queue = new CFBatchRequest();
-	$queue->use_credentials($dynamodb->credentials);
+	while(true) {
+	    $line = fgets($fd); // read next line
+	    if(!$line ||  $ln === $end + 1) {
+	        break;
+ 	   }
+ 	   if($ln >= $start && $ln <= $end) {
+	
+	$id = rand().'000'.$ln;
+	$msg = $filename.' '.$line;
 
-	$dynamodb->batch($queue)->put_item(array(
+ 	$dynamodb->batch($queue)->put_item(array(
     'TableName' => 'LogsTable',
     'Item' => array(
-        'id'       => array( AmazonDynamoDB::TYPE_STRING => '50' ), // Hash Key
-        'msg'      => array( AmazonDynamoDB::TYPE_STRING => '[DEBUG] Signaling resource WebServerGroup in stack myAPP with unique ID i-0e4fe429b91fea69c and status SUCCESS'                            ),
+    'id'       => array( AmazonDynamoDB::TYPE_STRING => $id ), // Hash Key
+    'msg'      => array( AmazonDynamoDB::TYPE_STRING => $msg ),
     )
-	));
+ 	));
+  }
+    $ln++;
+}
 
+fclose($fd); // close the file
+    
 	// Execute the batch of requests in parallel
 	$responses = $dynamodb->batch($queue)->send();
 
 	// Check for success...
 	if ($responses->areOK())
 	{
- 	   echo "The data has been successfully added to the table." . PHP_EOL;
+ 	    echo "<h3>The data has been successfully added to the table.</h3>" . PHP_EOL;
 	}
 	    else
 	{
-	    echo "Error: Failed to load data." . PHP_EOL;
+	    echo "<h3>Error: Failed to load data.</h3>" . PHP_EOL ;
 	    print_r($responses);
 	}
 }

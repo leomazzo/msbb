@@ -6,8 +6,8 @@ require_once dirname(__FILE__) . '/vendor/amazonwebservices/aws-sdk-for-php/sdk.
 
 // Instantiate the class
 
-putenv("key=AKIAICDJSZAIWHXBWUOQ");
-putenv("secret=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");
+putenv("key=AKIAIAFTCS4QQAH4EVAA");
+putenv("secret=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");
 putenv("region=us-east-1");
 
 $dynamodb = new AmazonDynamoDB(array(
