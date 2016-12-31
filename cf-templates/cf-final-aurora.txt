@@ -660,14 +660,14 @@
       },
       "CreationPolicy" : {
         "ResourceSignal" : {
-          "Timeout" : "PT25M"
+          "Timeout" : "PT10M"
         }
       },
       "UpdatePolicy": {
         "AutoScalingRollingUpdate": {
           "MinInstancesInService": "1",
           "MaxBatchSize": "1",
-          "PauseTime" : "PT20M",
+          "PauseTime" : "PT5M",
           "WaitOnResourceSignals": "true"
         }
       }
