@@ -1,7 +1,6 @@
 <?php
 define('LOG_PATH','/var/log/');
-
-define('DISPLAY_REVERSE',true); // true = displays log entries starting with the most recent
+define('DISPLAY_REVERSE',true); // order by
 define('DIRECTORY_SEPARATOR','/');
 
 function get_log_files($dir, &$results = array()) {
@@ -32,10 +31,9 @@ function get_log_files($dir, &$results = array()) {
 }
 
 
-/* Files that you want to have access to, inside the LOG_PATH directory */
+// Files to have access to -  LOG_PATH 
 $files = get_log_files(LOG_PATH);
 
-// Set a Smart default to 1:
 ksort($files);
 foreach ($files as $dir_name => $file_array) {
 	ksort($file_array);
@@ -46,7 +44,7 @@ foreach ($files as $dir_name => $file_array) {
 }
 
 
-// separate files from dirs:
+// Separating files...
 foreach ($files as $key => $val) {
 	foreach ($val as $log_name => $log_array) {
 		$log_files[$log_name] = $log_array;
@@ -56,28 +54,25 @@ foreach ($files as $key => $val) {
 
 $log =(!isset($_GET['p'])) ? $default : urldecode($_GET['p']);
 $lines =(!isset($_GET['lines'])) ? '50': $_GET['lines'];
-
-//$file = $log_files[$log]['path'];
 $file = $log;
-$title = substr($log, (strrpos($log, '/')+1));
+$title = substr($log, (strrpos($log, '/')));
 
 function tail($filename, $lines = 50, $buffer = 4096)
 {
-	// Open the file
+	// Open 
 	$f = fopen($filename, "rb");
 
-	// Jump to last character
+	// Jump final
 	fseek($f, -1, SEEK_END);
 
-	// Read it and adjust line number if necessary
-	// (Otherwise the result would be wrong if file doesn't end with a blank line)
+	// Read it and adjust line number 
 	if(fread($f, 1) != "\n") $lines -= 1;
 
-	// Start reading
+	// Reading
 	$output = '';
 	$chunk = '';
 
-	// While we would like more
+	// While 
 	while(ftell($f) > 0 && $lines >= 0)
 	{
 		// Figure out how far back we should jump
@@ -88,7 +83,7 @@ function tail($filename, $lines = 50, $buffer = 4096)
 
 		// Read a chunk and prepend it to our output
 		$output = ($chunk = fread($f, $seek)).$output;
-
+		
 		// Jump back to where we started reading
 		fseek($f, -mb_strlen($chunk, '8bit'), SEEK_CUR);
 
@@ -97,14 +92,13 @@ function tail($filename, $lines = 50, $buffer = 4096)
 	}
 
 	// While we have too many lines
-	// (Because of buffer size we might have read too many)
 	while($lines++ < 0)
 	{
 		// Find first newline and remove all text before that
 		$output = substr($output, strpos($output, "\n") + 1);
 	}
 
-	// Close file and return
+	// Close 
 	fclose($f);
 	return $output;
 }
@@ -133,13 +127,13 @@ function tail($filename, $lines = 50, $buffer = 4096)
         	<a href="<?php echo $_SERVER['PHP_SELF']?>" class="pure-menu-heading">Server Logs</a>
         	<ul>
         	<?php
-// Generate a menu
+// Menu
 foreach ($files as $dir => $files_array) {
 	echo '<li>'.$dir.'</li>';
 	echo '<ul>';
 	foreach($files_array as $k=>$f){
 		if(!is_file($f['path'])){
-			// File does not exist, remove it from the array, so it does not appear in the menu.
+			// File not exist
 			unset($files_array[$k]);
 			continue;
 		}
@@ -149,7 +143,6 @@ foreach ($files as $dir => $files_array) {
 	echo '</ul>';
 }
 ?>
-
 			</ul>
         </div>
     </div>
@@ -158,6 +151,7 @@ foreach ($files as $dir => $files_array) {
         <div class="header">
             <h1><?php echo $title;?></h1>
             <h2>The last <?php echo $lines ?> lines of <?php echo $file ?>.</h2>
+         </form>
 <p>How many lines to display? <form action="" method="get">
 	<input type="hidden" name="p" value="<?php echo $log ?>">
 	<select name="lines" onchange="this.form.submit()">
@@ -168,11 +162,16 @@ foreach ($files as $dir => $files_array) {
 		<option value="1000" <?php echo ($lines=='1000') ? 'selected':'' ?>>1000</option>
 </select>
 </form></p>
+
+<form name="dyn" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+ <input name="buttondyn" type="submit" value="Insert Data into DynamoDB">
+</form>
         </div>
 
         <div class="content">
 
 <code><pre style="font-size:14px;font-family:monospace;color:black;"><ol reversed>
+
 <?php
 $output = tail($file, $lines);
 $output = explode("\n", $output);
@@ -181,7 +180,42 @@ if(DISPLAY_REVERSE){
 	$output = array_reverse($output);
 }
 $output = implode('<li>',$output);
+
 echo $output;
+
+// If press insert into DynamoDB
+if (isset($_POST['buttondyn'])) {
+
+require_once ('config_dynamo.php');
+
+	// Insert Data
+	// Set up batch requests
+	$queue = new CFBatchRequest();
+	$queue->use_credentials($dynamodb->credentials);
+
+	$dynamodb->batch($queue)->put_item(array(
+    'TableName' => 'LogsTable',
+    'Item' => array(
+        'id'       => array( AmazonDynamoDB::TYPE_STRING => '50' ), // Hash Key
+        'msg'      => array( AmazonDynamoDB::TYPE_STRING => '[DEBUG] Signaling resource WebServerGroup in stack myAPP with unique ID i-0e4fe429b91fea69c and status SUCCESS'                            ),
+    )
+	));
+
+	// Execute the batch of requests in parallel
+	$responses = $dynamodb->batch($queue)->send();
+
+	// Check for success...
+	if ($responses->areOK())
+	{
+ 	   echo "The data has been successfully added to the table." . PHP_EOL;
+	}
+	    else
+	{
+	    echo "Error: Failed to load data." . PHP_EOL;
+	    print_r($responses);
+	}
+}
+
 ?>
 </ol></pre>
 	</code>
