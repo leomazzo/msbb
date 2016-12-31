@@ -28,8 +28,8 @@
                      }
                   },
                   "ProvisionedThroughput" : {
-                     "ReadCapacityUnits" : "50",
-                     "WriteCapacityUnits" : "50"
+                     "ReadCapacityUnits" : "500",
+                     "WriteCapacityUnits" : "500"
                  },
                  "TableName" : "LogsTable"                      
               }

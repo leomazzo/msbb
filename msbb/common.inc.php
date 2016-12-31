@@ -6,8 +6,8 @@ $options = [
     'region'            => 'us-east-1',
     'version'           => 'latest',
     'credentials' => [
-        'key'    => ' AKIAICDJSZAIWHXBWUOQ',
-        'secret' => 'lv7G94KDzPGePM0Ko6lFTvuiWlhStAg+ZqIDXRnr'
+        'key'    => 'your_key_here',
+        'secret' => 'your_secret_here'
     ]
 ];
 

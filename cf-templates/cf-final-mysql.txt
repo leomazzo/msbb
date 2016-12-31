@@ -5,6 +5,17 @@
 
   "Parameters" : {
 
+   "AWSKey": {
+            "Default": "",
+            "Description": "AWS Key to access DynamoDB",
+            "Type": "String"
+        },
+        "SecretKey": {
+            "Default": "",
+            "Description": "AWS Secret Key to access DynamoDB",
+            "Type": "String"
+        },
+        
     "KeyName": {
       "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the instances",
       "Type": "AWS::EC2::KeyPair::KeyName",
@@ -247,7 +258,26 @@
   },
 
   "Resources" : {
-
+	"LogsTable" : {
+             "Type" : "AWS::DynamoDB::Table",
+              "Properties" : {
+                  "KeySchema" : {
+                     "HashKeyElement": {
+                        "AttributeName" : "id",
+                        "AttributeType" : "S"
+                     },
+                        "RangeKeyElement": {
+                        "AttributeName" : "msg",
+                        "AttributeType" : "S"
+                     }
+                  },
+                  "ProvisionedThroughput" : {
+                     "ReadCapacityUnits" : "500",
+                     "WriteCapacityUnits" : "500"
+                 },
+                 "TableName" : "LogsTable"                      
+              }
+        },
   "SecurityGroupChangesMetricFilter": {
           "Type": "AWS::Logs::MetricFilter",
           "Properties": {
@@ -691,7 +721,8 @@
                   "sudo sed -i \"s/endpoint_here/'",{ "Fn::GetAtt" : [ "DBInstance", "Endpoint.Address" ] }, "'/g\" /etc/my.cnf\n",
                   "sudo sed -i \"s/'database_name_here'/'",{ "Ref" : "DBName" }, "'/g\" /etc/my.cnf\n",
                   "sudo cat /tmp/msbb-master/dumpbb.sql | mysql -w ",{ "Ref" : "DBName" },"\n",
-                  "sudo rm -rf /tmp/msbb-master\n"
+	              "sudo sed -i \"s/your_key_here/'",{ "Ref" : "AWSKey" }, "'/g\" /var/www/html/bbforum/msbb/common.inc.php\n",
+                  "sudo sed -i \"s/your_secret_here/'",{ "Ref" : "SecretKey" }, "'/g\" /var/www/html/bbforum/msbb/common.inc.php\n"
                 ]]},
                 "mode" : "000777",
                 "owner" : "root",
