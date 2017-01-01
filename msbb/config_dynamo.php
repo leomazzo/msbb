@@ -8,7 +8,7 @@ require_once dirname(__FILE__) . '/vendor/amazonwebservices/aws-sdk-for-php/sdk.
 
 putenv("key=your_key_here");
 putenv("secret=your_secret_here");
-putenv("region=us-east-1");
+putenv("region=your_region_here");
 
 $dynamodb = new AmazonDynamoDB(array(
         'key'    => getenv('key'),

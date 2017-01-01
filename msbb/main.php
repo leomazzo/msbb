@@ -170,6 +170,10 @@ foreach ($files as $dir => $files_array) {
 <form name="dyn" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>?p=<?php echo $log ?>&lines=<?php echo $lines ?>" method="post">
  <input name="buttondyn" type="submit" value="Insert Data into DynamoDB">
 </form>
+
+<form name="dyn" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>?p=<?php echo $log ?>&lines=<?php echo $lines ?>" method="post">
+ <input name="buttondynq" type="submit" value="Query Data from DynamoDB">
+</form>
         </div>
 
         <div class="content">
@@ -239,6 +243,33 @@ fclose($fd); // close the file
 	    echo "<h3>Error: Failed to load data.</h3>" . PHP_EOL ;
 	    print_r($responses);
 	}
+}
+
+if (isset($_POST['buttondynq'])) {
+	
+	include('config_dynamo.php');
+
+$msg = $filename;
+	
+$response = $dynamodb->query(array(
+    'TableName' => 'LogsTable',
+    'HashKeyValue' => array(
+        AmazonDynamoDB::TYPE_STRING => 'Amazon DynamoDB#DynamoDB Thread 2',
+    ),
+    'RangeKeyCondition' => array(
+        'ComparisonOperator' => AmazonDynamoDB::CONDITION_GREATER_THAN_OR_EQUAL,
+        'AttributeValueList' => array(
+            array(
+                AmazonDynamoDB::TYPE_STRING => $filename
+            )
+        )
+    )
+));
+
+//header('content-type: text/plain');
+// Response code 200 indicates success
+print_r($response);
+
 }
 
 ?>
