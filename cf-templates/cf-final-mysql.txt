@@ -6,12 +6,12 @@
   "Parameters" : {
 
    "AWSKey": {
-            "Default": "",
+            "NoEcho": "true",
             "Description": "AWS Key to access DynamoDB",
             "Type": "String"
         },
     "AWSSecretKey": {
-            "Default": "",
+            "NoEcho": "true",
             "Description": "AWS Secret Key to access DynamoDB",
             "Type": "String"
         },
