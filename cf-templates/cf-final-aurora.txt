@@ -641,6 +641,7 @@
         "SecurityGroupIngress" : [
           {"IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "SourceSecurityGroupOwnerId" : {"Fn::GetAtt" : ["ElasticLoadBalancer", "SourceSecurityGroup.OwnerAlias"]},"SourceSecurityGroupName" : {"Fn::GetAtt" : ["ElasticLoadBalancer", "SourceSecurityGroup.GroupName"]}},
           {"IpProtocol" : "tcp", "FromPort" : "3306", "ToPort" : "3306", "SourceSecurityGroupOwnerId" : {"Fn::GetAtt" : ["ElasticLoadBalancer", "SourceSecurityGroup.OwnerAlias"]},"SourceSecurityGroupName" : {"Fn::GetAtt" : ["ElasticLoadBalancer", "SourceSecurityGroup.GroupName"]}},
+          {"IpProtocol" : "tcp", "FromPort" : "3306", "ToPort" : "3306", "CidrIp" : { "Ref" : "SSHLocation"}},
           {"IpProtocol" : "tcp", "FromPort" : "22", "ToPort" : "22", "CidrIp" : { "Ref" : "SSHLocation"}}
         ]
       }
@@ -738,8 +739,8 @@
                   "sudo sed -i \"s/username_here/'",{ "Ref" : "DatabaseUsername" }, "'/g\" /etc/my.cnf\n",
                   "sudo sed -i \"s/password_here/'",{ "Ref" : "DatabasePassword" }, "'/g\" /etc/my.cnf\n",
                   "sudo sed -i \"s/endpoint_here/'",{ "Fn::GetAtt" : [ "DatabaseCluster", "Endpoint.Address" ] }, "'/g\" /etc/my.cnf\n",
-                  "sudo sed -i \"s/your_key_here/'",{ "Ref" : "AWSKey" }, "'/g\" /var/www/html/bbforum/msbb/common.inc.php\n",
-                  "sudo sed -i \"s/your_secret_here/'",{ "Ref" : "AWSSecretKey" }, "'/g\" /var/www/html/bbforum/msbb/common.inc.php\n",
+                  "sudo sed -i \"s/your_key_here/'",{ "Ref" : "AWSKey" }, "'/g\" /var/www/html/bbforum/msbb/config_dynamo.php\n",
+                  "sudo sed -i \"s/your_secret_here/'",{ "Ref" : "AWSSecretKey" }, "'/g\" /var/www/html/bbforum/msbb/config_dynamo.php\n",
                   "sudo cat /tmp/msbb-master/bbforum-config/dumpbb.sql | mysql -w ",{ "Ref" : "DatabaseName" },"\n"
                 ]]},
                 "mode" : "000777",
@@ -843,9 +844,7 @@
         "DBSubnetGroupName": {
           "Ref": "DatabaseSubnetGroup"
         },
-        "VpcSecurityGroupIds": {
-          "Ref": "WebServerSecurityGroup"
-        }
+        "VpcSecurityGroupIds" : [ { "Fn::GetAtt": [ "WebServerSecurityGroup", "GroupId" ] } ]
       }
     },
     "DatabasePrimaryInstance": {
