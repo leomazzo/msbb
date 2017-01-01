@@ -11,7 +11,7 @@
         },
         
     "AWSSecretKey": {
-            "NoEcho": "true",,
+            "NoEcho": "true",
             "Description": "AWS Secret Key to access DynamoDB",
             "Type": "String"
         },
