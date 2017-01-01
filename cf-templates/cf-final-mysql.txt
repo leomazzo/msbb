@@ -615,7 +615,6 @@
 
     "WebServerGroup" : {
       "Type" : "AWS::AutoScaling::AutoScalingGroup",
-      "DependsOn" : "DBInstance",
       "Properties" : {
         "AvailabilityZones" : { "Fn::GetAZs" : "" },
         "LaunchConfigurationName" : { "Ref" : "LaunchConfig" },
@@ -624,23 +623,10 @@
         "DesiredCapacity" : { "Ref" : "WebServerCapacity" },
         "LoadBalancerNames" : [ { "Ref" : "ElasticLoadBalancer" } ]
       },
-      "CreationPolicy" : {
-        "ResourceSignal" : {
-          "Timeout" : "PT5M"
-        }
-      },
-      "UpdatePolicy": {
-        "AutoScalingRollingUpdate": {
-          "MinInstancesInService": "1",
-          "MaxBatchSize": "1",
-          "PauseTime" : "PT5M",
-          "WaitOnResourceSignals": "true"
-        }
-      }
-    },
-
+     
     "LaunchConfig": {
       "Type" : "AWS::AutoScaling::LaunchConfiguration",
+      "DependsOn" : "DBInstance",
       "Metadata" : {
         "AWS::CloudFormation::Init" : {
           "configSets" : {
