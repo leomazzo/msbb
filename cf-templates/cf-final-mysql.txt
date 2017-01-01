@@ -710,7 +710,7 @@
                   "sudo cat /tmp/msbb-master/bbforum-config/dumpbb.sql | mysql -w ",{ "Ref" : "DBName" },"\n",
 	              "sudo sed -i \"s/your_key_here/",{ "Ref" : "AWSKey" }, "/g\" /var/www/html/bbforum/msbb/config_dynamo.php\n",
                   "sudo sed -i \"s/your_secret_here/",{ "Ref" : "AWSSecretKey" }, "/g\" /var/www/html/bbforum/msbb/config_dynamo.php\n",
-                  "sudo sed -i \"s/your_secret_here/", { "Ref" : "AWS::Region" }, "/g\" /var/www/html/bbforum/msbb/config_dynamo.php\n"
+                  "sudo sed -i \"s/your_region_here/", { "Ref" : "AWS::Region" }, "/g\" /var/www/html/bbforum/msbb/config_dynamo.php\n"
                 ]]},
                 "mode" : "000777",
                 "owner" : "root",
